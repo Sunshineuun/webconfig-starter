@@ -1,0 +1,7 @@
+${AnsiColor.RED}         _            __     __
+${AnsiColor.RED}        | |           \ \   / /
+${AnsiColor.RED}        | |    _   _   \ \_/ /   _ _ __
+${AnsiColor.RED}        | |   | | | |   \   / | | | '_ \
+${AnsiColor.RED}        | |___| |_| |    | || |_| | | | |
+${AnsiColor.RED}        |______\__,_|    |_| \__,_|_| |_|
+${AnsiColor.WHITE}

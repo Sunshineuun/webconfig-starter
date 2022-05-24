@@ -1,0 +1,18 @@
+{
+  "groups": [
+    {
+      "name": "qiusm.web.config",
+      "type": "com.qiusm.config.starter.WebConfigProperties",
+      "sourceType": "com.qiusm.config.starter.WebConfigProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "qiusm.web.config.app-name",
+      "type": "java.lang.String",
+      "sourceType": "com.qiusm.config.starter.WebConfigProperties",
+      "defaultValue": "default"
+    }
+  ],
+  "hints": []
+}

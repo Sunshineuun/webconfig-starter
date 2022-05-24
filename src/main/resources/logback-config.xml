@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!--
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    -->
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root"/>
+    <springProperty scope="context" name="LOG_HOME" source="logging.file.path"/>
+    <springProperty scope="context" name="LOG_APPLICATION_NAME" source="spring.application.name"/>
+    <springProperty scope="context" name="LOG_APPLICATION_PROFILES" source="spring.profiles.active" defaultValue="dev"/>
+    <springProperty scope="context" name="LOG_LOGSTASH_HOST" source="elk.logstash.host" defaultValue="localhost:9600"/>
+    <springProperty scope="context" name="LOG_LOGSTASH_PRINT_ENABLE" source="elk.logstash.print.enable"
+                    defaultValue="0"/>
+    <!--<property name="LOG_HOME" value="../../../../logs" />-->
+    <contextName>${LOG_APPLICATION_NAME}</contextName>
+    <!--获取本机ip-->
+    <conversionRule conversionWord="ip" converterClass="com.qiusm.config.starter.cat.IpClassicConverter"/>
+    <jmxConfigurator/>
+
+    <!--<appender name="CAT_APPENDER" class="com.dianping.cat.logback.CatLogbackAppender">
+    </appender>-->
+
+    <!--控制台日志输出配置-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!--对输出日志进行格式化-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 ，在哪行%-4line-->
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %boldMagenta([%ip] [%thread] [%X{traceId}])
+                %green(%class.%method [line=%-4line]) : %white(%msg%n)
+            </pattern>
+            <!--字符编码-->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_HOME}/${LOG_APPLICATION_NAME}/${LOG_APPLICATION_PROFILES}/${LOG_APPLICATION_NAME}.%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>  <!-- 保存30天 -->
+            <!-- 日志文件上限大小，达到指定大小后删除旧的日志文件 -->
+            <totalSizeCap>6GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${LOG_LEVEL}</level>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
+            <pattern>
+                {"data":"%d{yyyy-MM-dd
+                HH:mm:ss.SSS}","level":"%-5level","ip":"%ip","thread":"%thread","traceId":"%X{traceId}","class":"%class.%method","line":"%-4line","message":"%msg","stack_trace":
+                "%exception{20}"}%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--日志文件配置 ANT 埋点-->
+    <appender name="ANT_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_HOME}/${LOG_APPLICATION_NAME}/${LOG_APPLICATION_PROFILES}/${LOG_APPLICATION_NAME}_ant.%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <!-- 日志文件上限大小，达到指定大小后删除旧的日志文件 -->
+            <totalSizeCap>6GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- com.eju.houseparent.config.starter.ant.AntFilter -->
+        <filter class="com.qiusm.config.starter.ant.AntFilter">
+            <level>INFO</level>
+            <match>mark_id_log_buried_point_data_string_json</match>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%m %n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--日志文件配置error-->
+    <appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_HOME}/${LOG_APPLICATION_NAME}/${LOG_APPLICATION_PROFILES}/${LOG_APPLICATION_NAME}_error.%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <!-- 日志文件上限大小，达到指定大小后删除旧的日志文件 -->
+            <totalSizeCap>6GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%ip] [%thread] [%X{traceId}] %class.%method [line=%-4line] :
+                %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <if condition="${LOG_LOGSTASH_PRINT_ENABLE} == 1">
+        <then>
+            <!-- 为logstash输出的JSON格式的Appender -->
+            <appender name="LOGSTASH"
+                      class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+                <destination>${LOG_LOGSTASH_HOST}</destination>
+                <!-- 日志输出编码 -->
+                <encoder
+                        class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                    <providers>
+                        <timestamp>
+                            <timeZone>UTC</timeZone>
+                        </timestamp>
+                        <pattern>
+                            <pattern>
+                                {
+                                "severity": "%level",
+                                "service": "${springAppName:-}",
+                                "trace": "%X{X-B3-TraceId:-}",
+                                "span": "%X{X-B3-SpanId:-}",
+                                "exportable": "%X{X-Span-Export:-}",
+                                "pid": "${PID:-}",
+                                "thread": "%thread",
+                                "class": "%logger{40}",
+                                "rest": "%message"
+                                }
+                            </pattern>
+                        </pattern>
+                    </providers>
+                </encoder>
+            </appender>
+        </then>
+    </if>
+
+
+    <root level="${LOG_LEVEL}">
+        <!--<appender-ref ref="CAT_APPENDER" />-->
+        <appender-ref ref="CONSOLE"/>
+        <if condition="${LOG_LOGSTASH_PRINT_ENABLE} == 1">
+            <then>
+                <appender-ref ref="LOGSTASH"/>
+            </then>
+            <else>
+                <appender-ref ref="ROLLING_FILE"/>
+            </else>
+        </if>
+        <appender-ref ref="ANT_LOG"/>
+        <appender-ref ref="ERROR_LOG"/>
+    </root>
+
+    <!-- 定制包路径日志输出级别 -->
+    <!--
+    <logger name="com.eju.open" level="TRACE"/>
+         <appender-ref ref="EJU_OPEN_LOG" />
+    </logger>
+    -->
+
+</configuration>
