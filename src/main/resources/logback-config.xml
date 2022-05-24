@@ -9,8 +9,9 @@
     <springProperty scope="context" name="LOG_HOME" source="logging.file.path"/>
     <springProperty scope="context" name="LOG_APPLICATION_NAME" source="spring.application.name"/>
     <springProperty scope="context" name="LOG_APPLICATION_PROFILES" source="spring.profiles.active" defaultValue="dev"/>
-    <springProperty scope="context" name="LOG_LOGSTASH_HOST" source="elk.logstash.host" defaultValue="localhost:9600"/>
-    <springProperty scope="context" name="LOG_LOGSTASH_PRINT_ENABLE" source="elk.logstash.print.enable"
+    <springProperty scope="context" name="LOG_LOGSTASH_HOST" source="qiusm.web.config.logstash.host"
+                    defaultValue="localhost:8065"/>
+    <springProperty scope="context" name="LOG_LOGSTASH_PRINT_ENABLE" source="qiusm.web.config.logstash.enable"
                     defaultValue="0"/>
     <!--<property name="LOG_HOME" value="../../../../logs" />-->
     <contextName>${LOG_APPLICATION_NAME}</contextName>

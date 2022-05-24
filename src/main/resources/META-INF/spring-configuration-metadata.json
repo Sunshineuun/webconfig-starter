@@ -12,6 +12,20 @@
       "type": "java.lang.String",
       "sourceType": "com.qiusm.config.starter.WebConfigProperties",
       "defaultValue": "default"
+    },
+    {
+      "name": "qiusm.web.config.logstash.host",
+      "type": "java.lang.String",
+      "sourceType": "com.qiusm.config.starter.LogStashProperties",
+      "description": "logstash 接收日志的地址。该地址是在logstash input 中配置的tcp链接",
+      "defaultValue": "localhost:8065"
+    },
+    {
+      "name": "qiusm.web.config.logstash.enable",
+      "type": "java.lang.Integer",
+      "sourceType": "com.qiusm.config.starter.LogStashProperties",
+      "description": "是否将日志发送到logstash的开关。1-发送；0-不发送。",
+      "defaultValue": "0"
     }
   ],
   "hints": []
