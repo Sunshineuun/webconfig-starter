@@ -50,9 +50,7 @@
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
             <pattern>
-                {"data":"%d{yyyy-MM-dd
-                HH:mm:ss.SSS}","level":"%-5level","ip":"%ip","thread":"%thread","traceId":"%X{traceId}","class":"%class.%method","line":"%-4line","message":"%msg","stack_trace":
-                "%exception{20}"}%n
+                {"data":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%-5level","ip":"%ip","thread":"%thread","traceId":"%X{traceId}","class":"%class.%method","line":"%-4line","message":"%msg","stack_trace": "%exception{20}"}%n
             </pattern>
             <charset>UTF-8</charset>
         </encoder>
@@ -94,8 +92,7 @@
         </filter>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%ip] [%thread] [%X{traceId}] %class.%method [line=%-4line] :
-                %msg%n
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%ip] [%thread] [%X{traceId}] %class.%method [line=%-4line] : %msg%n
             </pattern>
             <charset>UTF-8</charset>
         </encoder>
