@@ -117,7 +117,7 @@
                                 "app_name": "${LOG_APPLICATION_NAME:-}",
                                 "pid": "${PID:-}",
                                 "ip": "%ip",
-                                "date": "%d",
+                                "date": "%d{yyyy-MM-dd HH:mm:ss.SSS,UTC}",
                                 "level": "%level",
                                 "class": "%class.%method",
                                 "line":"%line",
