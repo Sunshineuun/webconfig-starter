@@ -9,14 +9,14 @@
     <springProperty scope="context" name="LOG_HOME" source="logging.file.path"/>
     <springProperty scope="context" name="LOG_APPLICATION_NAME" source="spring.application.name"/>
     <springProperty scope="context" name="LOG_APPLICATION_PROFILES" source="spring.profiles.active" defaultValue="dev"/>
-    <springProperty scope="context" name="LOG_LOGSTASH_HOST" source="qiusm.web.config.logstash.host"
+    <springProperty scope="context" name="LOG_LOGSTASH_HOST" source="uun.web.config.logstash.host"
                     defaultValue="localhost:8065"/>
-    <springProperty scope="context" name="LOG_LOGSTASH_PRINT_ENABLE" source="qiusm.web.config.logstash.enable"
+    <springProperty scope="context" name="LOG_LOGSTASH_PRINT_ENABLE" source="uun.web.config.logstash.enable"
                     defaultValue="0"/>
     <!--<property name="LOG_HOME" value="../../../../logs" />-->
     <contextName>${LOG_APPLICATION_NAME}</contextName>
     <!--获取本机ip-->
-    <conversionRule conversionWord="ip" converterClass="com.qiusm.config.starter.cat.IpClassicConverter"/>
+    <conversionRule conversionWord="ip" converterClass="icu.uun.starter.cat.IpClassicConverter"/>
     <jmxConfigurator/>
 
     <!--<appender name="CAT_APPENDER" class="com.dianping.cat.logback.CatLogbackAppender">
@@ -67,7 +67,7 @@
             <totalSizeCap>6GB</totalSizeCap>
         </rollingPolicy>
         <!-- com.eju.houseparent.config.starter.ant.AntFilter -->
-        <filter class="com.qiusm.config.starter.ant.AntFilter">
+        <filter class="icu.uun.starter.ant.AntFilter">
             <level>INFO</level>
             <match>mark_id_log_buried_point_data_string_json</match>
         </filter>

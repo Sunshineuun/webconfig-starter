@@ -1,8 +1,8 @@
-package com.qiusm.config.starter;
+package icu.uun.starter;
 
 import com.alibaba.fastjson.JSON;
-import com.qiusm.config.starter.common.Global;
-import com.qiusm.config.starter.util.ServletUtils;
+import icu.uun.starter.common.Global;
+import icu.uun.starter.util.ServletUtils;
 import com.qiusm.parent.base.exception.BaseBusinessException;
 import com.qiusm.parent.base.model.BaseDTO;
 import org.slf4j.Logger;

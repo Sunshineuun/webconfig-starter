@@ -1,4 +1,4 @@
-package com.qiusm.config.starter;
+package icu.uun.starter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author qiushengming
  */
 @Configuration
-@ComponentScan(basePackages = "com.qiusm.config.starter")
+@ComponentScan(basePackages = "icu.uun.starter")
 public class WebConfig implements WebMvcConfigurer {
     @Autowired(required = false)
     private BuildRegistry<InterceptorRegistry> buildInterceptorRegistry;

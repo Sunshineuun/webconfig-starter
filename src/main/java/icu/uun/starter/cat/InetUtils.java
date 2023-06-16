@@ -1,4 +1,4 @@
-package com.qiusm.config.starter.cat;
+package icu.uun.starter.cat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

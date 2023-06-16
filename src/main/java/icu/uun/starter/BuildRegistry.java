@@ -1,4 +1,4 @@
-package com.qiusm.config.starter;
+package icu.uun.starter;
 
 @FunctionalInterface
 public interface BuildRegistry<T> {

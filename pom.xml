@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>parent</artifactId>
-        <groupId>com.qiusm</groupId>
-        <version>0.0.1</version>
+        <artifactId>uun-parent</artifactId>
+        <groupId>icu.uun</groupId>
+        <version>0.0.2</version>
     </parent>
 
     <artifactId>webconfig-starter</artifactId>
@@ -13,7 +13,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.qiusm</groupId>
+            <groupId>icu.uun</groupId>
             <artifactId>base-dto</artifactId>
         </dependency>
         <dependency>

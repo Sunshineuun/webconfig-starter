@@ -1,4 +1,4 @@
-package com.qiusm.config.starter;
+package icu.uun.starter;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * @author qiushengming
  */
 @Component
-@ConfigurationProperties(prefix = "qiusm.web.config.logstash")
+@ConfigurationProperties(prefix = "uun.web.config.logstash")
 public class LogStashProperties {
     private Integer enable;
     private String host;

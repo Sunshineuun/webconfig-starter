@@ -1,29 +1,29 @@
 {
   "groups": [
     {
-      "name": "qiusm.web.config",
-      "type": "com.qiusm.config.starter.WebConfigProperties",
-      "sourceType": "com.qiusm.config.starter.WebConfigProperties"
+      "name": "uun.web.config",
+      "type": "icu.uun.starter.WebConfigProperties",
+      "sourceType": "icu.uun.starter.WebConfigProperties"
     }
   ],
   "properties": [
     {
-      "name": "qiusm.web.config.app-name",
+      "name": "uun.web.config.app-name",
       "type": "java.lang.String",
-      "sourceType": "com.qiusm.config.starter.WebConfigProperties",
+      "sourceType": "icu.uun.starter.WebConfigProperties",
       "defaultValue": "default"
     },
     {
-      "name": "qiusm.web.config.logstash.host",
+      "name": "uun.web.config.logstash.host",
       "type": "java.lang.String",
-      "sourceType": "com.qiusm.config.starter.LogStashProperties",
+      "sourceType": "icu.uun.starter.LogStashProperties",
       "description": "logstash 接收日志的地址。该地址是在logstash input 中配置的tcp链接",
       "defaultValue": "localhost:8065"
     },
     {
-      "name": "qiusm.web.config.logstash.enable",
+      "name": "uun.web.config.logstash.enable",
       "type": "java.lang.Integer",
-      "sourceType": "com.qiusm.config.starter.LogStashProperties",
+      "sourceType": "icu.uun.starter.LogStashProperties",
       "description": "是否将日志发送到logstash的开关。1-发送；0-不发送。",
       "defaultValue": "0"
     }

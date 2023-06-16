@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.qiusm.config.starter.WebConfig
+icu.uun.starter.WebConfig

@@ -1,4 +1,4 @@
-package com.qiusm.config.starter.ant;
+package icu.uun.starter.ant;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
