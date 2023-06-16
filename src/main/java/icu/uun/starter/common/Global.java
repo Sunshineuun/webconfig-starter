@@ -1,6 +1,7 @@
 package icu.uun.starter.common;
 
-import com.qiusm.parent.base.model.BaseDTOCode;
+
+import icu.uun.base.model.BaseDTOCode;
 
 /**
  * @author qiushengming

@@ -1,10 +1,10 @@
 package icu.uun.starter;
 
 import com.alibaba.fastjson.JSON;
+import icu.uun.base.exception.BaseBusinessException;
+import icu.uun.base.model.BaseDTO;
 import icu.uun.starter.common.Global;
 import icu.uun.starter.util.ServletUtils;
-import com.qiusm.parent.base.exception.BaseBusinessException;
-import com.qiusm.parent.base.model.BaseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -53,7 +53,8 @@ public class BaseControllerHandler {
     public BaseDTO<Object> businessException(HttpServletRequest req, BaseBusinessException exception) {
         String parameterMap = ServletUtils.getParameterMap(req);
         log.warn("businessException ex header:{}", JSON.toJSONString(ServletUtils.parseHeaderMap(req)));
-        log.warn("businessException ex info:{}==={}==={}", exception.getClass(), exception.getBusinessCode(), exception.getMessage());
+        log.warn("businessException ex info:{}==={}==={}", exception.getClass(), exception.getBusinessCode(),
+                exception.getMessage());
         log.warn("businessException parameter info:{}==={}", req.getRequestURI(), parameterMap);
         // Cat.logEvent("URL.param", parameterMap);
         return this.getResult(exception.getBusinessCode(), exception.getMessage(), exception.getSubcode());
