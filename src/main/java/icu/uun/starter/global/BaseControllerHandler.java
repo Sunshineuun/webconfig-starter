@@ -1,4 +1,4 @@
-package icu.uun.starter;
+package icu.uun.starter.global;
 
 import com.alibaba.fastjson.JSON;
 import icu.uun.base.exception.BaseBusinessException;

@@ -24,7 +24,6 @@ public class WebConfig implements WebMvcConfigurer {
         if (this.buildInterceptorRegistry != null) {
             this.buildInterceptorRegistry.register(registry);
         }
-
     }
 
     @Override
@@ -37,6 +36,5 @@ public class WebConfig implements WebMvcConfigurer {
         if (this.buildResourceHandlerRegistry != null) {
             this.buildResourceHandlerRegistry.register(registry);
         }
-
     }
 }
