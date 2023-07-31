@@ -18,10 +18,12 @@ public class ResDto<T> implements Serializable {
     private T data;
     private String sign;
     private String subcode;
+    private Boolean success = false;
 
     public ResDto() {
         this.code = BaseCodeEnum.SUCCESS.getCode();
         this.msg = BaseCodeEnum.SUCCESS.getMessage();
+        this.success = true;
     }
 
     public void setCodeAndMsg(Integer code, String msg) {
@@ -47,6 +49,7 @@ public class ResDto<T> implements Serializable {
     public ResDto<T> fail(String msg) {
         this.code = BaseCodeEnum.FAILED.getCode();
         this.msg = msg;
+        this.success = false;
         return this;
     }
 
