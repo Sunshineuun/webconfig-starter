@@ -1,9 +1,11 @@
 package icu.uun.starter.global;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import icu.uun.starter.dto.BaseResp;
 import icu.uun.starter.dto.ResDto;
 import icu.uun.starter.exception.UunException;
+import icu.uun.starter.util.ClassUtil;
 import icu.uun.starter.util.ServletUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +20,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author qiushengming
  */
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = {"icu.uun"})
 public class ControllerHandler implements ResponseBodyAdvice<Object> {
 
     /**
@@ -38,7 +41,12 @@ public class ControllerHandler implements ResponseBodyAdvice<Object> {
             return false;
         }
         Class<?> returnTypeClass = returnType.getMethod().getReturnType();
-        return BaseResp.class.isAssignableFrom(returnTypeClass) || BaseResp.class.equals(returnTypeClass);
+        return BaseResp.class.isAssignableFrom(returnTypeClass)
+                || BaseResp.class.equals(returnTypeClass)
+                || Page.class.equals(returnTypeClass)
+                || ClassUtil.isWrapClass(returnTypeClass)
+                || ClassUtil.isCommonDataType(returnTypeClass)
+                || List.class.equals(returnTypeClass);
     }
 
     @SneakyThrows
@@ -47,7 +55,21 @@ public class ControllerHandler implements ResponseBodyAdvice<Object> {
             Object body, MethodParameter returnType, MediaType selectedContentType,
             Class<? extends HttpMessageConverter<?>> selectedConverterType,
             ServerHttpRequest request, ServerHttpResponse response) {
-        if (body instanceof BaseResp) {
+        Method method = returnType.getMethod();
+        if (method == null) {
+            return body;
+        }
+        Class<?> returnTypeClass = returnType.getMethod().getReturnType();
+
+        // 包装类型、基本类型、翻页、继承BaseResp的都需要被包裹
+        boolean isPack = BaseResp.class.isAssignableFrom(returnTypeClass)
+                || BaseResp.class.equals(returnTypeClass)
+                || Page.class.equals(returnTypeClass)
+                || ClassUtil.isWrapClass(returnTypeClass)
+                || ClassUtil.isCommonDataType(returnTypeClass)
+                || List.class.equals(returnTypeClass);
+
+        if (isPack) {
             ResDto<Object> resDto = new ResDto<>();
             resDto.setData(body);
             return resDto;
