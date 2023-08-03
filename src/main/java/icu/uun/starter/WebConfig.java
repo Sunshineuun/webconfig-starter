@@ -6,6 +6,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -53,16 +54,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(stringHttpMessageConverter());
+//        converters.add(stringHttpMessageConverter());
         converters.add(fastJsonHttpMessageConverter());
     }
 
     /**
      * feat: 当返回string时，会带双引号问题解决，主要是在转换的时候string用了fastjson，所以带了双引号，现在用StringHttpMessageConverter去处理<br>
      * 创建 bean 就没有作用，不知道为啥; fastJsonHttpMessageConverter 方法标记 @Bean 也会导致失败，不确定为啥。 TODO <br>
+     * feat: 当返回string时，会带双引号问题解决，spring 已经创建了StringHttpMessageConverter。只要在controller 层标记`@GetMapping(value = "getSendWord", produces = "text/plain")` produces = "text/plain".即可
      *
      */
-//    @Bean("stringHttpMessageConverterJson")
+//    @Bean
     public HttpMessageConverter<String> stringHttpMessageConverter() {
         List<MediaType> list = new ArrayList<>();
         list.add(MediaType.APPLICATION_JSON);
@@ -72,7 +74,7 @@ public class WebConfig implements WebMvcConfigurer {
         return stringHttpMessageConverter;
     }
 
-//    @Bean
+    @Bean
     public HttpMessageConverter<Object> fastJsonHttpMessageConverter() {
         FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
         FastJsonConfig config = new FastJsonConfig();
