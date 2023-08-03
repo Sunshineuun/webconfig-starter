@@ -58,6 +58,9 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(fastJsonHttpMessageConverter());
     }
 
+    /**
+     * feat: 当返回string时，会带双引号问题解决，主要是在转换的时候string用了fastjson，所以带了双引号，现在用StringHttpMessageConverter去处理
+     */
     @Bean
     public HttpMessageConverter<String> stringHttpMessageConverterApplicationJson() {
         List<MediaType> list = new ArrayList<>();
