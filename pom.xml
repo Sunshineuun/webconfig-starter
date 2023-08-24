@@ -17,6 +17,7 @@
         <dependency>
             <groupId>icu.uun</groupId>
             <artifactId>base-dto</artifactId>
+            <version>0.0.2</version>
         </dependency>
         <!--endregion-->
 

@@ -1,5 +1,6 @@
 package icu.uun.starter.global;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import icu.uun.starter.dto.BaseResp;
@@ -9,6 +10,7 @@ import icu.uun.starter.util.ClassUtil;
 import icu.uun.starter.util.ServletUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -58,6 +60,15 @@ public class ControllerHandler implements ResponseBodyAdvice<Object> {
         Method method = returnType.getMethod();
         if (method == null) {
             return body;
+        }
+
+        List<String> h = request.getHeaders().get("Dahachuxing");
+        if (CollectionUtil.isNotEmpty(h)) {
+            for (String s : h) {
+                if (StringUtils.equals(s, "Dahachuxing")) {
+                    return body;
+                }
+            }
         }
         Class<?> returnTypeClass = returnType.getMethod().getReturnType();
 
