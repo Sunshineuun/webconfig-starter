@@ -3,7 +3,9 @@ package icu.uun.starter.global;
 import com.alibaba.fastjson.JSON;
 import icu.uun.base.exception.BaseBusinessException;
 import icu.uun.base.model.BaseDTO;
+import icu.uun.base.model.ResDto;
 import icu.uun.starter.common.Global;
+import icu.uun.starter.exception.UunException;
 import icu.uun.starter.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +94,22 @@ public class BaseControllerHandler {
         } else {
             return this.getResult(Global.CODE_FAIL, "不支持的操作" + ex.getMessage());
         }
+    }
+
+    @ExceptionHandler({UunException.class})
+    public ResDto<Object> businessException(HttpServletRequest req, UunException exception) {
+        String parameterMap = ServletUtils.getParameterMap(req);
+        log.warn("UserApiException ex header:{}", JSON.toJSONString(ServletUtils.parseHeaderMap(req)));
+        log.warn("UserApiException ex info:{}==={}==={}", exception.getClass(), exception.getCode(),
+                exception.getMessage());
+        log.warn("UserApiException parameter info:{}==={}", req.getRequestURI(), parameterMap);
+        return this.getResult(exception.getCode(), exception.getMessage());
+    }
+
+    protected ResDto<Object> getResult(Integer code, String message) {
+        ResDto<Object> baseDto = new ResDto<>();
+        baseDto.setCodeAndMsg(code, message);
+        return baseDto;
     }
 
     @ExceptionHandler({Exception.class})

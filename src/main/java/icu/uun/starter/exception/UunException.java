@@ -1,6 +1,6 @@
 package icu.uun.starter.exception;
 
-import icu.uun.starter.enums.commone.BaseCodeEnum;
+import icu.uun.base.enums.BaseCodeEnum;
 
 /**
  * @author qiushengming

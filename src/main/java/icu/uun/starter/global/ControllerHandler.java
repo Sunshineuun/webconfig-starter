@@ -1,13 +1,10 @@
 package icu.uun.starter.global;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import icu.uun.starter.dto.BaseResp;
-import icu.uun.starter.dto.ResDto;
-import icu.uun.starter.exception.UunException;
+import icu.uun.base.model.BaseResp;
+import icu.uun.base.model.ResDto;
 import icu.uun.starter.util.ClassUtil;
-import icu.uun.starter.util.ServletUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -16,11 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -91,21 +86,5 @@ public class ControllerHandler implements ResponseBodyAdvice<Object> {
         } else {
             return body;
         }
-    }
-
-    @ExceptionHandler({UunException.class})
-    public ResDto<Object> businessException(HttpServletRequest req, UunException exception) {
-        String parameterMap = ServletUtils.getParameterMap(req);
-        log.warn("UserApiException ex header:{}", JSON.toJSONString(ServletUtils.parseHeaderMap(req)));
-        log.warn("UserApiException ex info:{}==={}==={}", exception.getClass(), exception.getCode(),
-                exception.getMessage());
-        log.warn("UserApiException parameter info:{}==={}", req.getRequestURI(), parameterMap);
-        return this.getResult(exception.getCode(), exception.getMessage());
-    }
-
-    protected ResDto<Object> getResult(Integer code, String message) {
-        ResDto<Object> baseDto = new ResDto<>();
-        baseDto.setCodeAndMsg(code, message);
-        return baseDto;
     }
 }
