@@ -1,30 +1,20 @@
 package icu.uun.starter.global;
 
 import com.alibaba.fastjson.JSON;
-import icu.uun.base.exception.BaseBusinessException;
 import icu.uun.base.model.BaseDTO;
 import icu.uun.base.model.ResDto;
 import icu.uun.starter.common.Global;
+import icu.uun.starter.dto.ExDto;
 import icu.uun.starter.exception.UunException;
 import icu.uun.starter.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.TypeMismatchException;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * 统一异常管理，后续再封装 <br>
@@ -50,7 +40,7 @@ public class BaseControllerHandler {
         baseDTO.setCodeAndMsg(code, message);
         return baseDTO;
     }
-
+/*
     @ExceptionHandler({BaseBusinessException.class})
     public BaseDTO<Object> businessException(HttpServletRequest req, BaseBusinessException exception) {
         String parameterMap = ServletUtils.getParameterMap(req);
@@ -94,15 +84,11 @@ public class BaseControllerHandler {
         } else {
             return this.getResult(Global.CODE_FAIL, "不支持的操作" + ex.getMessage());
         }
-    }
+    }*/
 
     @ExceptionHandler({UunException.class})
     public ResDto<Object> businessException(HttpServletRequest req, UunException exception) {
-        String parameterMap = ServletUtils.getParameterMap(req);
-        log.warn("UserApiException ex header:{}", JSON.toJSONString(ServletUtils.parseHeaderMap(req)));
-        log.warn("UserApiException ex info:{}==={}==={}", exception.getClass(), exception.getCode(),
-                exception.getMessage());
-        log.warn("UserApiException parameter info:{}==={}", req.getRequestURI(), parameterMap);
+        log.error("UserApiException {}", JSON.toJSONString(toExDto(req, exception)));
         return this.getResult(exception.getCode(), exception.getMessage());
     }
 
@@ -114,16 +100,27 @@ public class BaseControllerHandler {
 
     @ExceptionHandler({Exception.class})
     public BaseDTO<Object> handleException(HttpServletRequest req, Exception exception) {
-        log.error("handleException ex header:{}", JSON.toJSONString(ServletUtils.parseHeaderMap(req)));
-        log.error("handleException ex uri:{},param:{}", req.getRequestURI(), ServletUtils.getParameterMap(req));
-        log.error("handleException ex class:{},ex:{}", exception.getClass(), exception.getMessage());
-        log.error("系统正在维护中，请稍候再试", exception);
-        // Cat.logError(Global.CODE_ERROR, exception);
+        log.error("系统正在维护中，请稍候再试. Exception {}", JSON.toJSONString(toExDto(req, exception)));
         return this.getResult(Global.CODE_ERROR, "系统正在维护中，请稍候再试");
     }
 
-    @ModelAttribute
-    public BaseDTO<Object> getBaseDTO() {
-        return new BaseDTO();
+    public ExDto toExDto(HttpServletRequest req, Exception exception) {
+        ExDto exDto = new ExDto()
+                .setParams(ServletUtils.getParameterMap(req))
+                .setExClass(exception.getClass().getName())
+                .setMsg(exception.getMessage())
+                .setHead(ServletUtils.parseHeaderMap(req))
+                .setStackTrace(toStackTraceStr(exception));
+        if (exception instanceof UunException) {
+            exDto.setExCode(((UunException) exception).getCode());
+        }
+        return exDto;
+    }
+
+    public String toStackTraceStr(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
     }
 }
