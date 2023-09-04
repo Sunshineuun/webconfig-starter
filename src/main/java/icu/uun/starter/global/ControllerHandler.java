@@ -43,7 +43,8 @@ public class ControllerHandler implements ResponseBodyAdvice<Object> {
                 || Page.class.equals(returnTypeClass)
                 || ClassUtil.isWrapClass(returnTypeClass)
                 || ClassUtil.isCommonDataType(returnTypeClass)
-                || List.class.equals(returnTypeClass);
+                || List.class.equals(returnTypeClass)
+                || String.class.equals(returnTypeClass);
     }
 
     @SneakyThrows
@@ -73,7 +74,8 @@ public class ControllerHandler implements ResponseBodyAdvice<Object> {
                 || Page.class.equals(returnTypeClass)
                 || ClassUtil.isWrapClass(returnTypeClass)
                 || ClassUtil.isCommonDataType(returnTypeClass)
-                || List.class.equals(returnTypeClass);
+                || List.class.equals(returnTypeClass)
+                || String.class.equals(returnTypeClass);
 
         if (isPack) {
             ResDto<Object> resDto = new ResDto<>();

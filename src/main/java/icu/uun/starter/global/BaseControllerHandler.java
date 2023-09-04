@@ -1,6 +1,7 @@
 package icu.uun.starter.global;
 
 import com.alibaba.fastjson.JSON;
+import feign.FeignException;
 import icu.uun.base.model.BaseDTO;
 import icu.uun.base.model.ResDto;
 import icu.uun.starter.common.Global;
@@ -86,6 +87,11 @@ public class BaseControllerHandler {
         }
     }*/
 
+    @ExceptionHandler({FeignException.class})
+    public ResDto<Object> feignException(HttpServletRequest req, UunException exception) {
+        log.error("UserApiException {}", JSON.toJSONString(toExDto(req, exception)));
+        return this.getResult(99999, exception.getMessage());
+    }
     @ExceptionHandler({UunException.class})
     public ResDto<Object> businessException(HttpServletRequest req, UunException exception) {
         log.error("UserApiException {}", JSON.toJSONString(toExDto(req, exception)));
@@ -121,6 +127,7 @@ public class BaseControllerHandler {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
+        log.error("{}", sw);
         return sw.toString();
     }
 }
