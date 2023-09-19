@@ -117,7 +117,6 @@ public class BaseControllerHandler {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        log.error("{}", sw);
         return sw;
     }
 }
