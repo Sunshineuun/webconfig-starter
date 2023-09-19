@@ -3,7 +3,6 @@ package icu.uun.starter.global;
 import feign.FeignException;
 import icu.uun.base.model.ResDto;
 import icu.uun.starter.common.Global;
-import icu.uun.starter.dto.ExDto;
 import icu.uun.starter.exception.UunException;
 import icu.uun.starter.util.ServletUtils;
 import org.slf4j.Logger;
@@ -99,18 +98,21 @@ public class BaseControllerHandler {
     }
 
     public void toExDto(String msg, HttpServletRequest req, Exception exception) {
-        ExDto exDto = new ExDto()
-                .setParams(ServletUtils.getParameterMap(req))
-                .setExClass(exception.getClass().getName())
-                .setMsg(exception.getMessage())
-                .setHead(ServletUtils.parseHeaderMap(req));
+//        ExDto exDto = new ExDto()
+//                .setParams(ServletUtils.getParameterMap(req))
+//                .setExClass(exception.getClass().getName())
+//                .setMsg(exception.getMessage())
+//                .setHead(ServletUtils.parseHeaderMap(req));
 //                .setStackTrace(toStackTraceStr(exception));
+
+        Integer code = -999;
         if (exception instanceof UunException) {
-            exDto.setExCode(((UunException) exception).getCode());
+//            exDto.setExCode(((UunException) exception).getCode());
+            code = ((UunException) exception).getCode();
         }
-        log.error("{},{}. \nclass: {} \nparams: {} \nhead: {} \n\nstack trace: {}", msg,
+        log.error("{},{},{}. \nclass: {} \nparams: {} \nhead: {} \n\nstack trace: {}", msg, code,
                 exception.getMessage(), exception.getClass().getName(),
-                ServletUtils.getParameterMap(req),ServletUtils.parseHeaderMap(req), toStackTraceStr(exception));
+                ServletUtils.getParameterMap(req), ServletUtils.parseHeaderMap(req), toStackTraceStr(exception));
     }
 
     public StringWriter toStackTraceStr(Exception e) {
