@@ -1,8 +1,6 @@
 package icu.uun.starter.global;
 
-import com.alibaba.fastjson.JSON;
 import feign.FeignException;
-import icu.uun.base.model.BaseDTO;
 import icu.uun.base.model.ResDto;
 import icu.uun.starter.common.Global;
 import icu.uun.starter.dto.ExDto;
@@ -30,17 +28,6 @@ public class BaseControllerHandler {
     public BaseControllerHandler() {
     }
 
-    private BaseDTO<Object> getResult(String code, String message, String subcode) {
-        BaseDTO<Object> baseDTO = new BaseDTO<>();
-        baseDTO.setCodeAndMsg(code, message, subcode);
-        return baseDTO;
-    }
-
-    private BaseDTO<Object> getResult(String code, String message) {
-        BaseDTO<Object> baseDTO = new BaseDTO<>();
-        baseDTO.setCodeAndMsg(code, message);
-        return baseDTO;
-    }
 /*
     @ExceptionHandler({BaseBusinessException.class})
     public BaseDTO<Object> businessException(HttpServletRequest req, BaseBusinessException exception) {
@@ -89,12 +76,12 @@ public class BaseControllerHandler {
 
     @ExceptionHandler({FeignException.class})
     public ResDto<Object> feignException(HttpServletRequest req, UunException exception) {
-        log.error("UserApiException {}", JSON.toJSONString(toExDto(req, exception)));
+        toExDto(exception.getMessage(), req, exception);
         return this.getResult(99999, exception.getMessage());
     }
     @ExceptionHandler({UunException.class})
     public ResDto<Object> businessException(HttpServletRequest req, UunException exception) {
-        log.error("UserApiException {}", JSON.toJSONString(toExDto(req, exception)));
+        toExDto(exception.getMessage(), req, exception);
         return this.getResult(exception.getCode(), exception.getMessage());
     }
 
@@ -105,29 +92,32 @@ public class BaseControllerHandler {
     }
 
     @ExceptionHandler({Exception.class})
-    public BaseDTO<Object> handleException(HttpServletRequest req, Exception exception) {
-        log.error("系统正在维护中，请稍候再试. Exception {}", JSON.toJSONString(toExDto(req, exception)));
-        return this.getResult(Global.CODE_ERROR, "系统正在维护中，请稍候再试");
+    public ResDto<Object> handleException(HttpServletRequest req, Exception exception) {
+        String msg = "系统正在维护中，请稍候再试.";
+        toExDto(msg, req, exception);
+        return this.getResult(Integer.parseInt(Global.CODE_ERROR), msg);
     }
 
-    public ExDto toExDto(HttpServletRequest req, Exception exception) {
+    public void toExDto(String msg, HttpServletRequest req, Exception exception) {
         ExDto exDto = new ExDto()
                 .setParams(ServletUtils.getParameterMap(req))
                 .setExClass(exception.getClass().getName())
                 .setMsg(exception.getMessage())
-                .setHead(ServletUtils.parseHeaderMap(req))
-                .setStackTrace(toStackTraceStr(exception));
+                .setHead(ServletUtils.parseHeaderMap(req));
+//                .setStackTrace(toStackTraceStr(exception));
         if (exception instanceof UunException) {
             exDto.setExCode(((UunException) exception).getCode());
         }
-        return exDto;
+        log.error("{},{}. \nclass: {} \nparams: {} \nhead: {} \n\nstack trace: {}", msg,
+                exception.getMessage(), exception.getClass().getName(),
+                ServletUtils.getParameterMap(req),ServletUtils.parseHeaderMap(req), toStackTraceStr(exception));
     }
 
-    public String toStackTraceStr(Exception e) {
+    public StringWriter toStackTraceStr(Exception e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         log.error("{}", sw);
-        return sw.toString();
+        return sw;
     }
 }
