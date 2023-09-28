@@ -4,6 +4,7 @@ import feign.FeignException;
 import icu.uun.base.model.ResDto;
 import icu.uun.starter.common.Global;
 import icu.uun.starter.exception.UunException;
+import icu.uun.starter.util.CommonUtil;
 import icu.uun.starter.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 /**
  * 统一异常管理，后续再封装 <br>
@@ -112,13 +111,7 @@ public class BaseControllerHandler {
         }
         log.error("{},{},{}. \nclass: {} \nparams: {} \nhead: {} \n\nstack trace: {}", msg, code,
                 exception.getMessage(), exception.getClass().getName(),
-                ServletUtils.getParameterMap(req), ServletUtils.parseHeaderMap(req), toStackTraceStr(exception));
-    }
-
-    public StringWriter toStackTraceStr(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        return sw;
+                ServletUtils.getParameterMap(req), ServletUtils.parseHeaderMap(req),
+                CommonUtil.toStackTraceStr(exception));
     }
 }
