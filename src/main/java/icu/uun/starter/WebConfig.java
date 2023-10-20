@@ -60,7 +60,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(stringHttpMessageConverter());
+//        converters.add(stringHttpMessageConverter());
         converters.add(fastJsonHttpMessageConverter());
     }
 
@@ -70,7 +70,7 @@ public class WebConfig implements WebMvcConfigurer {
      * feat: 当返回string时，会带双引号问题解决，spring 已经创建了StringHttpMessageConverter。只要在controller 层标记`@GetMapping(value = "getSendWord", produces = "text/plain")` produces = "text/plain".即可
      *
      */
-    @Bean
+//    @Bean
     public HttpMessageConverter<String> stringHttpMessageConverter() {
         List<MediaType> list = new ArrayList<>();
         list.add(MediaType.APPLICATION_JSON);
