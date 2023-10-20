@@ -1,11 +1,15 @@
 package icu.uun.starter;
 
 import com.alibaba.fastjson.PropertyNamingStrategy;
+import com.alibaba.fastjson.serializer.NameFilter;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.env.EnvironmentEndpoint;
+import org.springframework.boot.actuate.metrics.MetricsEndpoint;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -14,9 +18,12 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import springfox.documentation.swagger.web.SwaggerResource;
+import springfox.documentation.swagger.web.UiConfiguration;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -53,7 +60,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-//        converters.add(stringHttpMessageConverter());
+        converters.add(stringHttpMessageConverter());
         converters.add(fastJsonHttpMessageConverter());
     }
 
@@ -63,7 +70,7 @@ public class WebConfig implements WebMvcConfigurer {
      * feat: 当返回string时，会带双引号问题解决，spring 已经创建了StringHttpMessageConverter。只要在controller 层标记`@GetMapping(value = "getSendWord", produces = "text/plain")` produces = "text/plain".即可
      *
      */
-//    @Bean
+    @Bean
     public HttpMessageConverter<String> stringHttpMessageConverter() {
         List<MediaType> list = new ArrayList<>();
         list.add(MediaType.APPLICATION_JSON);
@@ -73,7 +80,7 @@ public class WebConfig implements WebMvcConfigurer {
         return stringHttpMessageConverter;
     }
 
-//    @Bean
+    @Bean
     public HttpMessageConverter<Object> fastJsonHttpMessageConverter() {
         FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
         FastJsonConfig config = new FastJsonConfig();
@@ -87,15 +94,27 @@ public class WebConfig implements WebMvcConfigurer {
                 SerializerFeature.WriteNullStringAsEmpty
         );
         SerializeConfig serializeConfig = new SerializeConfig();
+
+        // 过滤器，不使用该序列化的
+        // fastjson 使用 PropertyNamingStrategy.SnakeCase 导致swagger页面的api接口显示不了
+        NameFilter nameFilter = (object, name, value) -> name;
+        serializeConfig.addFilter(UiConfiguration.class, nameFilter);
+        serializeConfig.addFilter(SwaggerResource.class, nameFilter);
+        serializeConfig.addFilter(MetricsEndpoint.MetricResponse.class, nameFilter);
+        serializeConfig.addFilter(EnvironmentEndpoint.EnvironmentDescriptor.class, nameFilter);
+
+        // 驼峰转换
         serializeConfig.setPropertyNamingStrategy(PropertyNamingStrategy.SnakeCase);
         config.setSerializeConfig(serializeConfig);
 
         converter.setFastJsonConfig(config);
         converter.setDefaultCharset(StandardCharsets.UTF_8);
-        List<MediaType> mediaTypeList = new ArrayList<>();
+
         // 解决中文乱码问题，相当于在Controller上的@RequestMapping中加了个属性produces = "application/json"
-        mediaTypeList.add(MediaType.APPLICATION_JSON);
-        converter.setSupportedMediaTypes(mediaTypeList);
+        converter.setSupportedMediaTypes(Arrays.asList(
+                MediaType.TEXT_HTML, MediaType.APPLICATION_JSON,
+                MediaType.valueOf("application/*+json"), MediaType.ALL));
+
         return converter;
     }
 }
