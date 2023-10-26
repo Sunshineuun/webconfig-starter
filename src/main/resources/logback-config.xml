@@ -184,7 +184,7 @@
         <if condition="${LOG_LOGSTASH_PRINT_ENABLE} == 1">
             <then>
 <!--                因为，在root中已经被拦截输出了一次所以这里不用再 appender 了-->
-<!--                <appender-ref ref="LOGSTASH"/>-->
+                <appender-ref ref="LOGSTASH"/>
             </then>
             <else>
                 <appender-ref ref="SQL_LOG"/>
