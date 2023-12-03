@@ -1,11 +1,18 @@
 package icu.uun.starter;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.PropertyNamingStrategy;
 import com.alibaba.fastjson.serializer.NameFilter;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
+import com.baomidou.dynamic.datasource.ds.ItemDataSource;
+import icu.uun.starter.druid.DahaStatLogger;
+import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
@@ -21,6 +28,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.swagger.web.SwaggerResource;
 import springfox.documentation.swagger.web.UiConfiguration;
 
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,14 +38,23 @@ import java.util.List;
 /**
  * @author qiushengming
  */
+@Slf4j
 @Configuration
 @ComponentScan(basePackages = "icu.uun.starter")
-public class WebConfig implements WebMvcConfigurer {
+@MapperScan("icu.uun.starter.mapper")
+public class WebConfig implements WebMvcConfigurer, InitializingBean {
     @Autowired(required = false)
     private BuildRegistry<InterceptorRegistry> buildInterceptorRegistry;
 
     @Autowired(required = false)
     private BuildRegistry<ResourceHandlerRegistry> buildResourceHandlerRegistry;
+
+    @Autowired(required = false)
+    private DruidDataSource dataSource;
+    @Autowired(required = false)
+    private DynamicRoutingDataSource dynamicRoutingDataSource;
+    @Resource
+    private DahaStatLogger dahaStatLogger;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -116,5 +134,25 @@ public class WebConfig implements WebMvcConfigurer {
                 MediaType.valueOf("application/*+json"), MediaType.ALL));
 
         return converter;
+    }
+
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        log.info("druid set stat logger");
+        if (dataSource != null) {
+            dataSource.setStatLogger(dahaStatLogger);
+        }
+        if (dynamicRoutingDataSource != null) {
+            dynamicRoutingDataSource.getDataSources().forEach((k, dataSource) -> {
+                log.info("datasource name: {}", k);
+                if (dataSource instanceof ItemDataSource) {
+                    DataSource druidSource = ((ItemDataSource) dataSource).getDataSource();
+                    if (druidSource instanceof DruidDataSource) {
+                        ((DruidDataSource) druidSource).setStatLogger(dahaStatLogger);
+                    }
+                }
+            });
+        }
     }
 }
