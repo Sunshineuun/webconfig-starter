@@ -1,5 +1,6 @@
 package icu.uun.starter.druid;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.druid.pool.DruidDataSourceStatLogger;
 import com.alibaba.druid.pool.DruidDataSourceStatLoggerAdapter;
 import com.alibaba.druid.pool.DruidDataSourceStatValue;
@@ -53,6 +54,7 @@ public class DahaStatLogger extends DruidDataSourceStatLoggerAdapter implements 
                             druidSqlMonitor.getId());
                     druidSqlMonitor.setId(id);
                     druidSqlMonitor.setIp(this.ip);
+                    druidSqlMonitor.setUpdateTime(DateUtil.now());
                     kafkaTemplate.send(TOPIC, JSONObject.toJSONString(druidSqlMonitor));
                 } catch (Exception e) {
                     log.error("druid sql monitor: {}", CommonUtil.toStackTraceStr(e));
