@@ -28,7 +28,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.swagger.web.SwaggerResource;
 import springfox.documentation.swagger.web.UiConfiguration;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class WebConfig implements WebMvcConfigurer, InitializingBean {
     private DruidDataSource dataSource;
     @Autowired(required = false)
     private DynamicRoutingDataSource dynamicRoutingDataSource;
-    @Resource
+    @Autowired(required = false)
     private DahaStatLogger dahaStatLogger;
 
     @Override
@@ -140,19 +139,21 @@ public class WebConfig implements WebMvcConfigurer, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         log.info("druid set stat logger");
-        if (dataSource != null) {
-            dataSource.setStatLogger(dahaStatLogger);
-        }
-        if (dynamicRoutingDataSource != null) {
-            dynamicRoutingDataSource.getDataSources().forEach((k, dataSource) -> {
-                log.info("datasource name: {}", k);
-                if (dataSource instanceof ItemDataSource) {
-                    DataSource druidSource = ((ItemDataSource) dataSource).getDataSource();
-                    if (druidSource instanceof DruidDataSource) {
-                        ((DruidDataSource) druidSource).setStatLogger(dahaStatLogger);
+        if (dahaStatLogger != null) {
+            if (dataSource != null) {
+                dataSource.setStatLogger(dahaStatLogger);
+            }
+            if (dynamicRoutingDataSource != null) {
+                dynamicRoutingDataSource.getDataSources().forEach((k, dataSource) -> {
+                    log.info("datasource name: {}", k);
+                    if (dataSource instanceof ItemDataSource) {
+                        DataSource druidSource = ((ItemDataSource) dataSource).getDataSource();
+                        if (druidSource instanceof DruidDataSource) {
+                            ((DruidDataSource) druidSource).setStatLogger(dahaStatLogger);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 }

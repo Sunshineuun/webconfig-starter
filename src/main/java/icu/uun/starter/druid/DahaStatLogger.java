@@ -5,29 +5,38 @@ import com.alibaba.druid.pool.DruidDataSourceStatLoggerAdapter;
 import com.alibaba.druid.pool.DruidDataSourceStatValue;
 import com.alibaba.druid.stat.JdbcSqlStatValue;
 import com.alibaba.fastjson.JSONObject;
+import icu.uun.base.druid.DruidSqlMonitor;
 import icu.uun.starter.cat.InetUtils;
-import icu.uun.starter.domain.DruidSqlMonitor;
-import icu.uun.starter.mapper.DruidSqlMonitorMapper;
 import icu.uun.starter.util.CommonUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * @author qiushengming
  */
 @Slf4j
 @Component
+//@ConditionalOnBean(KafkaTemplate.class)
 public class DahaStatLogger extends DruidDataSourceStatLoggerAdapter implements DruidDataSourceStatLogger {
-
-    private final DruidSqlMonitorMapper druidSqlMonitorMapper;
+    @Resource
+    private KafkaTemplate<String, Object> kafkaTemplate;
     private final String ip;
     @Value("${spring.application.name}")
     private String applicationName;
+    public static String TOPIC;
 
-    public DahaStatLogger(DruidSqlMonitorMapper druidSqlMonitorMapper) {
-        this.druidSqlMonitorMapper = druidSqlMonitorMapper;
+    @Value("${uun.monitor.druidSql.topic:MONITOR_DRUID_SQL}")
+    public void setTopic(String topic) {
+        TOPIC = topic;
+    }
+
+
+    public DahaStatLogger() {
         this.ip = InetUtils.findFirstNonLoopbackAddress().getHostName();
     }
 
@@ -44,7 +53,7 @@ public class DahaStatLogger extends DruidDataSourceStatLoggerAdapter implements 
                             druidSqlMonitor.getId());
                     druidSqlMonitor.setId(id);
                     druidSqlMonitor.setIp(this.ip);
-                    druidSqlMonitorMapper.upsert(druidSqlMonitor);
+                    kafkaTemplate.send(TOPIC, JSONObject.toJSONString(druidSqlMonitor));
                 } catch (Exception e) {
                     log.error("druid sql monitor: {}", CommonUtil.toStackTraceStr(e));
                 }
