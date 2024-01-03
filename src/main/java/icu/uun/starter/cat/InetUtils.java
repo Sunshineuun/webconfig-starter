@@ -75,8 +75,4 @@ public class InetUtils {
             }
         }
     }
-
-    public static void main(String[] args) {
-        System.out.println(findFirstNonLoopbackAddress().getHostName());
-    }
 }

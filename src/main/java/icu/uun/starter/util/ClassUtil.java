@@ -21,8 +21,4 @@ public class ClassUtil {
             return false;
         }
     }
-
-    public static void main(String[] args) {
-        System.out.println(isCommonDataType(int.class));
-    }
 }
